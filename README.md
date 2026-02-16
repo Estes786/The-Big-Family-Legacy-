@@ -30,7 +30,7 @@
 - [x] Project structure setup
 - [x] Technology stack defined
 
-### Phase 2: Intelligence Layer 🔄 IN PROGRESS
+### Phase 2: Intelligence Layer ✅ COMPLETED
 - [x] **Privacy Guard Agent** - PII detection & data redaction
 - [x] **Memory Curator Agent** - Vision AI (BLIP-2) & face detection
 - [x] **Genealogist Agent** - Relationship validation & tree building
@@ -38,21 +38,21 @@
 - [x] **LangGraph Workflows** - Memory processing & story generation orchestration
 - [x] **FastAPI Application** - AI agents API endpoints
 - [x] **Docker Configuration** - Container setup for Northflank deployment
-- [ ] Northflank deployment (next step)
-- [ ] End-to-end testing
 
-### Phase 3: Frontend Interface ⏳ PENDING
-- [ ] Upload UI
-- [ ] Family tree visualization
-- [ ] Story generation UI
-- [ ] Chat interface
-- [ ] Dashboard
+### Phase 3: Manual Platform Setup 🔄 IN PROGRESS
+- [x] **GitHub Repository** - Code pushed and tracked ✅
+- [x] **Setup Documentation** - Complete deployment guide created
+- [x] **Environment Configuration** - Credentials organized
+- [ ] **Supabase Database** - Schema migration and RLS setup ⏳
+- [ ] **Cloudflare Pages** - Frontend deployment ⏳
+- [ ] **Northflank Backend** - AI agents deployment ⏳
+- [ ] **Integration Testing** - End-to-end verification ⏳
 
 ### Phase 4: Launch Preparation ⏳ PENDING
 - [ ] Testing & QA
 - [ ] Performance optimization
-- [ ] Cloudflare Pages deployment
-- [ ] User onboarding
+- [ ] User onboarding materials
+- [ ] Ramadhan presentation prep
 
 ---
 
@@ -139,6 +139,22 @@ webapp/
 
 ## 🚀 Getting Started
 
+### 📚 Complete Setup Guide
+
+**🎯 NEW: Follow our comprehensive manual setup guide!**
+
+**[→ Read SETUP_GUIDE.md for step-by-step deployment instructions](SETUP_GUIDE.md)**
+
+The setup guide covers:
+1. **Supabase Database Setup** (30 min) - Schema migration, RLS policies
+2. **Cloudflare Pages Deployment** (20 min) - Frontend hosting, R2 storage
+3. **Northflank Backend Deployment** (40 min) - AI agents API
+4. **Integration & Testing** (15 min) - End-to-end verification
+
+**Total time: ~2 hours**
+
+---
+
 ### Prerequisites
 
 - Node.js 18+
@@ -201,15 +217,24 @@ npm test
 
 ## 📊 Development Progress
 
-### Overall Progress: 35% Complete
+### Overall Progress: 45% Complete
 
 - [x] Documentation (100%)
 - [x] AI Agents (100%)
-- [ ] Database (0%)
-- [ ] API Integration (20%)
-- [ ] Frontend (0%)
+- [x] GitHub Setup (100%)
+- [ ] Database (0% - Ready to deploy)
+- [ ] Frontend (0% - Structure ready)
+- [ ] Backend Deployment (0% - Docker ready)
 - [ ] Testing (0%)
-- [ ] Deployment (0%)
+
+### Next Immediate Steps:
+
+1. **Setup Supabase** - Follow [SETUP_GUIDE.md](SETUP_GUIDE.md) Step 1
+2. **Deploy to Cloudflare Pages** - Follow Step 2
+3. **Deploy Backend to Northflank** - Follow Step 3
+4. **Test Integration** - Follow Step 4
+
+**Estimated time to production: 2-3 hours of manual setup**
 
 ---
 
@@ -237,6 +262,10 @@ Complete documentation available in `/docs`:
 - [Agent Manifest](docs/05_AGENT_MANIFEST.md)
 - [Deployment Guide](docs/06_DEPLOYMENT.md)
 - [TODO Checklist](docs/07_TODO.md)
+
+**🆕 Phase 3 Resources:**
+- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - Complete manual deployment guide
+- **CREDENTIALS.md** - API keys reference (local only, not in git)
 
 ---
 
