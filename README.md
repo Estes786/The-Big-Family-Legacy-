@@ -56,6 +56,42 @@
 
 ---
 
+## 🌐 Live Deployment URLs
+
+### Production (Cloudflare Pages)
+- **Main**: https://the-big-family-legacy.pages.dev
+- **Latest Deploy**: https://16c3c32f.the-big-family-legacy.pages.dev
+- **Status**: ✅ **LIVE & DEPLOYED**
+
+### Development
+- **Sandbox**: https://3000-i4y5n8lfe853eyhniievj-2e1b9533.sandbox.novita.ai
+- **Local**: http://localhost:3000
+
+### Source Code
+- **GitHub**: https://github.com/Estes786/The-Big-Family-Legacy-.git
+- **Branch**: main
+
+---
+
+## 🔑 Configured Credentials
+
+All credentials are stored in `.dev.vars` (gitignored):
+
+### Platform Access
+- ✅ **GitHub PAT**: Configured for repository access
+- ✅ **Cloudflare API Token**: Configured for Pages deployment
+- ✅ **LangChain**: Workflow PAT & Service Key configured
+- ✅ **CrewAI**: PAT & Enterprise Auth configured  
+- ✅ **Northflank**: 2x API tokens configured
+
+### Database & Storage (Pending)
+- ⏳ **Supabase**: URL, Anon Key, Service Key - *Awaiting setup*
+- ⏳ **AI Models**: HuggingFace, OpenAI tokens - *Awaiting setup*
+
+⚠️ **SECURITY NOTE**: All production credentials are stored securely in `.dev.vars` file. Never commit this file to version control!
+
+---
+
 ## 🏗️ Technology Stack
 
 ### Frontend Layer
