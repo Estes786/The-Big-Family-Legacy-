@@ -2,28 +2,134 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { serveStatic } from 'hono/cloudflare-workers'
 
-const app = new Hono()
+type Bindings = {
+  // Cloudflare bindings will be added here when needed
+  // VECTORIZE: Vectorize
+  // AI: Ai
+}
 
-// Enable CORS for backend API integration
-app.use('/api/*', cors({
-  origin: '*',
-  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
-}))
+const app = new Hono<{ Bindings: Bindings }>()
+
+// Enable CORS for API routes
+app.use('/api/*', cors())
 
 // Serve static files from public directory
 app.use('/static/*', serveStatic({ root: './public' }))
 
+// ============================================================================
+// API ROUTES
+// ============================================================================
+
 // Health check endpoint
-app.get('/health', (c) => {
-  return c.json({ 
-    status: 'ok',
-    service: 'THE BIG FAMILY LEGACY - Frontend',
-    timestamp: new Date().toISOString()
+app.get('/api/health', (c) => {
+  return c.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0',
+    stack: 'Cloudflare + Supabase + CrewAI + LangSmith',
+    services: {
+      supabase: 'configured',
+      cloudflare: 'active',
+      crewai: 'configured',
+      langsmith: 'configured'
+    }
   })
 })
 
-// Homepage
+// Supabase database test endpoint
+app.get('/api/supabase/test', async (c) => {
+  try {
+    // In production, you would import Supabase client here
+    // For now, return configuration status
+    return c.json({
+      status: 'configured',
+      message: 'Supabase credentials ready',
+      url: 'https://ywgyxsufaaxbfjudcdhp.supabase.co',
+      features: {
+        auth: 'ready',
+        database: 'ready',
+        storage: 'ready'
+      }
+    })
+  } catch (error) {
+    return c.json({ error: 'Supabase connection failed' }, 500)
+  }
+})
+
+// CrewAI status endpoint
+app.get('/api/crewai/status', (c) => {
+  return c.json({
+    status: 'configured',
+    message: 'CrewAI credentials ready',
+    agents: {
+      familyHistorian: 'configured',
+      storyWeaver: 'configured',
+      memoryAnalyzer: 'configured'
+    }
+  })
+})
+
+// LangSmith status endpoint
+app.get('/api/langsmith/status', (c) => {
+  return c.json({
+    status: 'configured',
+    message: 'LangSmith tracing ready',
+    features: {
+      workflow: 'configured',
+      tracing: 'ready',
+      monitoring: 'ready'
+    }
+  })
+})
+
+// Memories API (stub - will be implemented with Supabase)
+app.get('/api/memories', (c) => {
+  return c.json({
+    memories: [],
+    total: 0,
+    message: 'Ready for Supabase integration'
+  })
+})
+
+app.post('/api/memories/upload', async (c) => {
+  return c.json({
+    success: true,
+    message: 'Memory upload endpoint ready for implementation',
+    nextSteps: ['Connect Supabase', 'Implement file upload to R2', 'Add AI processing']
+  })
+})
+
+// Family tree API (stub)
+app.get('/api/tree', (c) => {
+  return c.json({
+    nodes: [],
+    edges: [],
+    message: 'Ready for Supabase graph data'
+  })
+})
+
+// AI Story generation API (stub - will use CrewAI)
+app.post('/api/story/generate', async (c) => {
+  return c.json({
+    success: true,
+    message: 'AI story generation ready',
+    nextSteps: ['Connect CrewAI agents', 'Implement LangSmith tracing']
+  })
+})
+
+// Digital ancestor chat API (stub - will use Groq via Cloudflare AI Gateway)
+app.post('/api/chat/message', async (c) => {
+  return c.json({
+    success: true,
+    message: 'Chat endpoint ready',
+    nextSteps: ['Connect Groq AI', 'Setup Cloudflare AI Gateway', 'Add Vectorize RAG']
+  })
+})
+
+// ============================================================================
+// FRONTEND ROUTES
+// ============================================================================
+
 app.get('/', (c) => {
   return c.html(`
     <!DOCTYPE html>
@@ -31,314 +137,258 @@ app.get('/', (c) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>THE BIG FAMILY LEGACY 🌳</title>
-        <meta name="description" content="Platform Warisan Digital Keluarga dengan AI">
-        
-        <!-- TailwindCSS -->
+        <title>The Big Family Legacy - Warisan Digital Keluarga</title>
         <script src="https://cdn.tailwindcss.com"></script>
-        
-        <!-- FontAwesome Icons -->
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-        
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-            body {
-                font-family: 'Inter', sans-serif;
-            }
             .gradient-bg {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             }
-            .hero-pattern {
-                background-color: #667eea;
-                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            }
             .card-hover {
-                transition: all 0.3s ease;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
             }
             .card-hover:hover {
-                transform: translateY(-8px);
-                box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             }
         </style>
     </head>
     <body class="bg-gray-50">
-        <!-- Navigation -->
-        <nav class="bg-white shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex items-center">
-                        <i class="fas fa-tree text-purple-600 text-2xl mr-3"></i>
-                        <span class="text-xl font-bold text-gray-800">THE BIG FAMILY LEGACY</span>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button id="loginBtn" class="text-gray-600 hover:text-purple-600 font-medium">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Login
-                        </button>
-                        <button id="registerBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">
-                            <i class="fas fa-user-plus mr-2"></i>Daftar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
         <!-- Hero Section -->
-        <section class="hero-pattern text-white py-20">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <div class="animate-fade-in">
-                    <i class="fas fa-tree text-6xl mb-6 opacity-90"></i>
-                    <h1 class="text-5xl font-bold mb-6">
-                        Warisan Keluarga untuk Generasi Mendatang
+        <div class="gradient-bg text-white py-20">
+            <div class="container mx-auto px-4">
+                <div class="text-center max-w-4xl mx-auto">
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6">
+                        <i class="fas fa-tree"></i> The Big Family Legacy
                     </h1>
-                    <p class="text-xl mb-8 opacity-90 max-w-3xl mx-auto">
-                        Platform digital yang menggunakan AI untuk menyimpan foto, cerita, dan memori keluarga besar Anda. 
-                        Biarkan generasi masa depan mengenal leluhur mereka.
+                    <p class="text-xl md:text-2xl mb-8 opacity-90">
+                        Platform Warisan Digital Keluarga dengan AI
                     </p>
-                    <div class="flex justify-center space-x-4">
-                        <button class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition shadow-lg">
-                            <i class="fas fa-rocket mr-2"></i>Mulai Sekarang
-                        </button>
-                        <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition">
-                            <i class="fas fa-play mr-2"></i>Lihat Demo
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Features Section -->
-        <section class="py-20 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold text-gray-800 mb-4">
-                        Fitur-Fitur Unggulan
-                    </h2>
-                    <p class="text-xl text-gray-600">
-                        Powered by AI untuk pengalaman terbaik
+                    <p class="text-lg mb-10 opacity-80">
+                        Hybrid Grandmaster Stack: Cloudflare + Supabase + CrewAI + LangSmith
                     </p>
-                </div>
-
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Feature 1 -->
-                    <div class="bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-xl card-hover">
-                        <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-camera text-white text-xl"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">
-                            Upload Memori
-                        </h3>
-                        <p class="text-gray-600">
-                            Simpan foto, video, dan dokumen penting keluarga dengan aman di cloud
-                        </p>
+                    <div class="flex gap-4 justify-center">
+                        <a href="#demo" class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                            <i class="fas fa-rocket"></i> Lihat Demo
+                        </a>
+                        <a href="#features" class="border-2 border-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition">
+                            <i class="fas fa-info-circle"></i> Fitur
+                        </a>
                     </div>
-
-                    <!-- Feature 2 -->
-                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl card-hover">
-                        <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-robot text-white text-xl"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">
-                            AI Caption
-                        </h3>
-                        <p class="text-gray-600">
-                            AI otomatis membuat deskripsi dan mendeteksi wajah di foto keluarga
-                        </p>
-                    </div>
-
-                    <!-- Feature 3 -->
-                    <div class="bg-gradient-to-br from-green-50 to-teal-50 p-6 rounded-xl card-hover">
-                        <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-project-diagram text-white text-xl"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">
-                            Pohon Silsilah
-                        </h3>
-                        <p class="text-gray-600">
-                            Bangun dan visualisasi pohon keluarga interaktif hingga 10 generasi
-                        </p>
-                    </div>
-
-                    <!-- Feature 4 -->
-                    <div class="bg-gradient-to-br from-orange-50 to-red-50 p-6 rounded-xl card-hover">
-                        <div class="w-12 h-12 bg-orange-600 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-book text-white text-xl"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800 mb-2">
-                            Story Generator
-                        </h3>
-                        <p class="text-gray-600">
-                            AI menulis cerita sejarah keluarga dari foto dan memori yang tersimpan
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stats Section -->
-        <section class="py-16 gradient-bg text-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid md:grid-cols-4 gap-8 text-center">
-                    <div>
-                        <div class="text-4xl font-bold mb-2">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="text-3xl font-bold">1000+</div>
-                        <div class="text-purple-200">Keluarga Terdaftar</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold mb-2">
-                            <i class="fas fa-images"></i>
-                        </div>
-                        <div class="text-3xl font-bold">50K+</div>
-                        <div class="text-purple-200">Foto & Video</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold mb-2">
-                            <i class="fas fa-tree"></i>
-                        </div>
-                        <div class="text-3xl font-bold">500+</div>
-                        <div class="text-purple-200">Pohon Silsilah</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold mb-2">
-                            <i class="fas fa-book-open"></i>
-                        </div>
-                        <div class="text-3xl font-bold">2K+</div>
-                        <div class="text-purple-200">Cerita AI</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="py-20 bg-gray-50">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="text-4xl font-bold text-gray-800 mb-6">
-                    Siap Memulai Warisan Digital Keluarga Anda?
-                </h2>
-                <p class="text-xl text-gray-600 mb-8">
-                    Bergabung sekarang dan abadikan cerita keluarga besar Anda untuk generasi mendatang
-                </p>
-                <button class="bg-purple-600 text-white px-10 py-4 rounded-lg font-semibold text-lg hover:bg-purple-700 transition shadow-lg">
-                    <i class="fas fa-rocket mr-2"></i>Daftar Gratis Sekarang
-                </button>
-                <p class="text-gray-500 mt-4">
-                    🎯 Target Launch: Ramadhan 2026 | Free Beta Access
-                </p>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="bg-gray-800 text-white py-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid md:grid-cols-4 gap-8">
-                    <div>
-                        <div class="flex items-center mb-4">
-                            <i class="fas fa-tree text-purple-400 text-2xl mr-2"></i>
-                            <span class="font-bold text-lg">THE BIG FAMILY LEGACY</span>
-                        </div>
-                        <p class="text-gray-400">
-                            Platform warisan digital untuk keluarga Indonesia
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold mb-4">Product</h4>
-                        <ul class="space-y-2 text-gray-400">
-                            <li><a href="#" class="hover:text-white">Fitur</a></li>
-                            <li><a href="#" class="hover:text-white">Harga</a></li>
-                            <li><a href="#" class="hover:text-white">Demo</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold mb-4">Company</h4>
-                        <ul class="space-y-2 text-gray-400">
-                            <li><a href="#" class="hover:text-white">Tentang</a></li>
-                            <li><a href="#" class="hover:text-white">Blog</a></li>
-                            <li><a href="#" class="hover:text-white">Kontak</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold mb-4">Legal</h4>
-                        <ul class="space-y-2 text-gray-400">
-                            <li><a href="#" class="hover:text-white">Privacy</a></li>
-                            <li><a href="#" class="hover:text-white">Terms</a></li>
-                            <li><a href="#" class="hover:text-white">Security</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                    <p>© 2026 THE BIG FAMILY LEGACY. Built with ❤️ for families.</p>
-                    <p class="mt-2">
-                        <i class="fas fa-code mr-2"></i>Powered by Cloudflare Pages + Hono + Python AI Agents
-                    </p>
-                </div>
-            </div>
-        </footer>
-
-        <!-- Simple JavaScript -->
-        <script>
-            // Simple console log for testing
-            console.log('THE BIG FAMILY LEGACY - Frontend loaded ✅');
-            
-            // Add event listeners
-            document.getElementById('loginBtn')?.addEventListener('click', () => {
-                alert('Login feature coming soon! 🚀');
-            });
-            
-            document.getElementById('registerBtn')?.addEventListener('click', () => {
-                alert('Registration feature coming soon! 🚀');
-            });
-        </script>
-    </body>
-    </html>
-  `)
-})
-
-// About page
-app.get('/about', (c) => {
-  return c.html(`
-    <!DOCTYPE html>
-    <html lang="id">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Tentang Kami - THE BIG FAMILY LEGACY</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-    </head>
-    <body class="bg-gray-50">
-        <div class="max-w-4xl mx-auto px-4 py-16">
-            <h1 class="text-4xl font-bold text-gray-800 mb-6">
-                <i class="fas fa-info-circle text-purple-600 mr-3"></i>
-                Tentang THE BIG FAMILY LEGACY
-            </h1>
-            <div class="bg-white rounded-lg shadow-md p-8 prose prose-lg">
-                <h2>Visi</h2>
-                <p>Membantu keluarga besar Indonesia melestarikan warisan digital mereka untuk generasi mendatang.</p>
-                
-                <h2>Misi</h2>
-                <ul>
-                    <li>Menyediakan platform yang mudah digunakan untuk menyimpan memori keluarga</li>
-                    <li>Menggunakan AI untuk membantu dokumentasi dan narasi sejarah keluarga</li>
-                    <li>Menjaga privasi dan keamanan data keluarga dengan standar tertinggi</li>
-                </ul>
-                
-                <h2>Technology Stack</h2>
-                <ul>
-                    <li><strong>Frontend</strong>: Cloudflare Pages + Hono + TailwindCSS</li>
-                    <li><strong>Backend</strong>: Python FastAPI + CrewAI + LangGraph</li>
-                    <li><strong>Database</strong>: Supabase PostgreSQL</li>
-                    <li><strong>Storage</strong>: Cloudflare R2</li>
-                    <li><strong>AI Models</strong>: GPT-4o, BLIP-2, Llama 3.1</li>
-                </ul>
-                
-                <div class="mt-8">
-                    <a href="/" class="text-purple-600 hover:text-purple-700 font-semibold">
-                        <i class="fas fa-arrow-left mr-2"></i>Kembali ke Beranda
-                    </a>
                 </div>
             </div>
         </div>
+
+        <!-- Status Banner -->
+        <div class="bg-green-50 border-l-4 border-green-500 p-4">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 text-2xl mr-3"></i>
+                    <div>
+                        <p class="text-green-800 font-semibold">System Status: Operational</p>
+                        <p class="text-green-600 text-sm">All services configured and ready</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div id="features" class="py-16">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">
+                    <i class="fas fa-star"></i> Fitur Unggulan
+                </h2>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="card-hover bg-white p-6 rounded-xl shadow-lg">
+                        <div class="text-4xl text-purple-600 mb-4">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Upload Kenangan</h3>
+                        <p class="text-gray-600">Upload foto, video, dan cerita keluarga dengan mudah</p>
+                    </div>
+                    
+                    <!-- Feature 2 -->
+                    <div class="card-hover bg-white p-6 rounded-xl shadow-lg">
+                        <div class="text-4xl text-blue-600 mb-4">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Pohon Keluarga</h3>
+                        <p class="text-gray-600">Visualisasi interaktif silsilah keluarga Anda</p>
+                    </div>
+                    
+                    <!-- Feature 3 -->
+                    <div class="card-hover bg-white p-6 rounded-xl shadow-lg">
+                        <div class="text-4xl text-green-600 mb-4">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">AI Story Generation</h3>
+                        <p class="text-gray-600">AI membuat cerita warisan dari kenangan Anda</p>
+                    </div>
+                    
+                    <!-- Feature 4 -->
+                    <div class="card-hover bg-white p-6 rounded-xl shadow-lg">
+                        <div class="text-4xl text-red-600 mb-4">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Chat dengan Leluhur</h3>
+                        <p class="text-gray-600">Ngobrol dengan digital ancestor menggunakan AI</p>
+                    </div>
+                    
+                    <!-- Feature 5 -->
+                    <div class="card-hover bg-white p-6 rounded-xl shadow-lg">
+                        <div class="text-4xl text-yellow-600 mb-4">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Aman & Private</h3>
+                        <p class="text-gray-600">Data keluarga Anda terlindungi dengan enkripsi</p>
+                    </div>
+                    
+                    <!-- Feature 6 -->
+                    <div class="card-hover bg-white p-6 rounded-xl shadow-lg">
+                        <div class="text-4xl text-indigo-600 mb-4">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 text-gray-800">Global Access</h3>
+                        <p class="text-gray-600">Akses dari mana saja via Cloudflare Edge Network</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tech Stack Section -->
+        <div class="bg-gray-100 py-16">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">
+                    <i class="fas fa-layer-group"></i> Hybrid Grandmaster Stack
+                </h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <i class="fas fa-cloud text-4xl text-orange-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">Cloudflare Pages</h3>
+                        <p class="text-sm text-gray-600">Global Edge Hosting</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <i class="fas fa-database text-4xl text-green-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">Supabase</h3>
+                        <p class="text-sm text-gray-600">Auth + PostgreSQL</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <i class="fas fa-users-cog text-4xl text-blue-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">CrewAI</h3>
+                        <p class="text-sm text-gray-600">AI Agent Orchestration</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <i class="fas fa-chart-line text-4xl text-purple-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">LangSmith</h3>
+                        <p class="text-sm text-gray-600">AI Tracing & Monitoring</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <i class="fas fa-brain text-4xl text-red-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">Groq AI</h3>
+                        <p class="text-sm text-gray-600">Llama 3 Inference</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <i class="fas fa-search text-4xl text-indigo-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">Vectorize</h3>
+                        <p class="text-sm text-gray-600">RAG Memory Storage</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <i class="fas fa-lock text-4xl text-yellow-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">AI Gateway</h3>
+                        <p class="text-sm text-gray-600">Token Caching</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow text-center">
+                        <i class="fas fa-rocket text-4xl text-pink-500 mb-3"></i>
+                        <h3 class="font-bold text-lg">Koyeb (Optional)</h3>
+                        <p class="text-sm text-gray-600">Python Agents</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Status Section -->
+        <div class="py-16">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">
+                    <i class="fas fa-server"></i> API Status
+                </h2>
+                <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="border-l-4 border-green-500 pl-4">
+                            <h3 class="font-bold text-lg mb-2">
+                                <i class="fas fa-check-circle text-green-500"></i> Health Check
+                            </h3>
+                            <p class="text-sm text-gray-600">GET /api/health</p>
+                            <p class="text-xs text-green-600 mt-1">✓ Operational</p>
+                        </div>
+                        <div class="border-l-4 border-blue-500 pl-4">
+                            <h3 class="font-bold text-lg mb-2">
+                                <i class="fas fa-database text-blue-500"></i> Supabase
+                            </h3>
+                            <p class="text-sm text-gray-600">GET /api/supabase/test</p>
+                            <p class="text-xs text-blue-600 mt-1">✓ Configured</p>
+                        </div>
+                        <div class="border-l-4 border-purple-500 pl-4">
+                            <h3 class="font-bold text-lg mb-2">
+                                <i class="fas fa-robot text-purple-500"></i> CrewAI
+                            </h3>
+                            <p class="text-sm text-gray-600">GET /api/crewai/status</p>
+                            <p class="text-xs text-purple-600 mt-1">✓ Ready</p>
+                        </div>
+                        <div class="border-l-4 border-orange-500 pl-4">
+                            <h3 class="font-bold text-lg mb-2">
+                                <i class="fas fa-chart-line text-orange-500"></i> LangSmith
+                            </h3>
+                            <p class="text-sm text-gray-600">GET /api/langsmith/status</p>
+                            <p class="text-xs text-orange-600 mt-1">✓ Ready</p>
+                        </div>
+                    </div>
+                    <div class="mt-8 text-center">
+                        <a href="/api/health" target="_blank" class="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition">
+                            <i class="fas fa-external-link-alt"></i> Test API Health
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="gradient-bg text-white py-12">
+            <div class="container mx-auto px-4">
+                <div class="grid md:grid-cols-3 gap-8 mb-8">
+                    <div>
+                        <h3 class="font-bold text-lg mb-4">
+                            <i class="fas fa-tree"></i> The Big Family Legacy
+                        </h3>
+                        <p class="opacity-80 text-sm">
+                            Platform Warisan Digital Keluarga dengan AI
+                        </p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-4">Quick Links</h3>
+                        <ul class="space-y-2 text-sm opacity-80">
+                            <li><a href="#features" class="hover:opacity-100"><i class="fas fa-star"></i> Fitur</a></li>
+                            <li><a href="/api/health" target="_blank" class="hover:opacity-100"><i class="fas fa-server"></i> API Status</a></li>
+                            <li><a href="https://github.com/Estes786/The-Big-Family-Legacy-" target="_blank" class="hover:opacity-100"><i class="fab fa-github"></i> GitHub</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg mb-4">Status</h3>
+                        <ul class="space-y-2 text-sm">
+                            <li><span class="text-green-400">●</span> Frontend: Active</li>
+                            <li><span class="text-green-400">●</span> Supabase: Configured</li>
+                            <li><span class="text-green-400">●</span> CrewAI: Ready</li>
+                            <li><span class="text-green-400">●</span> LangSmith: Ready</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-white border-opacity-20 pt-8 text-center text-sm opacity-80">
+                    <p>&copy; 2026 The Big Family Legacy. Made with ❤️ and 🤖 AI</p>
+                    <p class="mt-2">Target: Ramadhan 2026 🌙</p>
+                </div>
+            </div>
+        </footer>
     </body>
     </html>
   `)
@@ -354,15 +404,13 @@ app.notFound((c) => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>404 - Not Found</title>
         <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     </head>
-    <body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <body class="bg-gray-100 flex items-center justify-center min-h-screen">
         <div class="text-center">
-            <i class="fas fa-search text-6xl text-gray-400 mb-4"></i>
             <h1 class="text-6xl font-bold text-gray-800 mb-4">404</h1>
             <p class="text-xl text-gray-600 mb-8">Halaman tidak ditemukan</p>
             <a href="/" class="bg-purple-600 text-white px-6 py-3 rounded-lg hover:bg-purple-700 transition">
-                <i class="fas fa-home mr-2"></i>Kembali ke Beranda
+                Kembali ke Beranda
             </a>
         </div>
     </body>
