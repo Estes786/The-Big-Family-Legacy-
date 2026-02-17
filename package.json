@@ -1,6 +1,7 @@
 {
   "name": "the-big-family-legacy",
   "version": "1.0.0",
+  "type": "module",
   "description": "Platform Warisan Digital Keluarga dengan AI",
   "private": true,
   "scripts": {
