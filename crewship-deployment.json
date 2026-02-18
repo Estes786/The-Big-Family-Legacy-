@@ -1,0 +1,76 @@
+{
+  "crew": {
+    "name": "the-big-family-legacy-crew",
+    "description": "AI crew untuk menganalisis dan mengolah warisan keluarga digital",
+    "version": "1.0.0",
+    "agents": [
+      {
+        "name": "Family_Historian",
+        "role": "Genealogy Expert",
+        "goal": "Extract and structure family relationships from memories",
+        "backstory": "Expert genealogist dengan 20+ tahun pengalaman dalam riset silsilah keluarga dan analisis dokumen historis.",
+        "tools": [
+          "memory_analyzer",
+          "relationship_extractor",
+          "date_parser"
+        ],
+        "verbose": true,
+        "allow_delegation": true,
+        "max_iterations": 15
+      },
+      {
+        "name": "Story_Weaver",
+        "role": "Narrative Biographer",
+        "goal": "Transform family memories into compelling stories",
+        "backstory": "Penulis biografi profesional yang ahli dalam mengubah kenangan menjadi narasi yang menyentuh hati.",
+        "tools": [
+          "text_generator",
+          "sentiment_analyzer",
+          "narrative_structurer"
+        ],
+        "verbose": true,
+        "allow_delegation": false,
+        "max_iterations": 10
+      },
+      {
+        "name": "Memory_Analyzer",
+        "role": "Vision & OCR Specialist",
+        "goal": "Analyze photos, documents, and extract text from images",
+        "backstory": "Computer vision expert yang dapat membaca dan menginterpretasi foto keluarga, dokumen, dan memorabilia.",
+        "tools": [
+          "image_analyzer",
+          "ocr_extractor",
+          "face_recognizer",
+          "metadata_reader"
+        ],
+        "verbose": true,
+        "allow_delegation": false,
+        "max_iterations": 8
+      }
+    ],
+    "tasks": [
+      {
+        "description": "Analyze uploaded family memory (photo/document/text)",
+        "expected_output": "Structured JSON with extracted information: people, dates, locations, events",
+        "agent": "Memory_Analyzer"
+      },
+      {
+        "description": "Extract family relationships and build genealogy graph",
+        "expected_output": "Family tree graph with relationships and metadata",
+        "agent": "Family_Historian"
+      },
+      {
+        "description": "Generate narrative story from analyzed memories",
+        "expected_output": "Compelling family story in Bahasa Indonesia with emotional depth",
+        "agent": "Story_Weaver"
+      }
+    ],
+    "process": "sequential",
+    "memory": true,
+    "cache": true,
+    "max_rpm": 20,
+    "language": "id"
+  },
+  "deployedAt": "2026-02-18T03:34:49.340Z",
+  "status": "active"
+}

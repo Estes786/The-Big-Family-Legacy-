@@ -1,0 +1,136 @@
+{
+  "project": "the-big-family-legacy",
+  "name": "family-legacy-processing",
+  "description": "End-to-end workflow untuk memproses warisan keluarga",
+  "version": "1.0.0",
+  "nodes": [
+    {
+      "id": "upload_memory",
+      "type": "input",
+      "name": "Memory Upload",
+      "description": "User uploads memory (photo, document, or text)",
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "memoryId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "photo",
+              "document",
+              "text",
+              "audio"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "id": "analyze_memory",
+      "type": "crew_task",
+      "name": "Analyze Memory",
+      "agent": "Memory_Analyzer",
+      "dependsOn": [
+        "upload_memory"
+      ],
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "people": {
+            "type": "array"
+          },
+          "dates": {
+            "type": "array"
+          },
+          "locations": {
+            "type": "array"
+          },
+          "events": {
+            "type": "array"
+          },
+          "sentiment": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "id": "extract_relationships",
+      "type": "crew_task",
+      "name": "Extract Relationships",
+      "agent": "Family_Historian",
+      "dependsOn": [
+        "analyze_memory"
+      ],
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "relationships": {
+            "type": "array"
+          },
+          "familyTree": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "id": "generate_story",
+      "type": "crew_task",
+      "name": "Generate Story",
+      "agent": "Story_Weaver",
+      "dependsOn": [
+        "extract_relationships"
+      ],
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "story": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "keywords": {
+            "type": "array"
+          }
+        }
+      }
+    },
+    {
+      "id": "output",
+      "type": "output",
+      "name": "Final Output",
+      "dependsOn": [
+        "generate_story"
+      ],
+      "description": "Structured output with story, relationships, and metadata"
+    }
+  ],
+  "edges": [
+    {
+      "from": "upload_memory",
+      "to": "analyze_memory"
+    },
+    {
+      "from": "analyze_memory",
+      "to": "extract_relationships"
+    },
+    {
+      "from": "extract_relationships",
+      "to": "generate_story"
+    },
+    {
+      "from": "generate_story",
+      "to": "output"
+    }
+  ]
+}

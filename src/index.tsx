@@ -82,6 +82,115 @@ app.get('/api/langsmith/status', (c) => {
   })
 })
 
+// CrewShip configuration endpoint
+app.get('/api/crew/config', (c) => {
+  return c.json({
+    name: 'the-big-family-legacy-crew',
+    description: 'AI crew untuk menganalisis dan mengolah warisan keluarga digital',
+    version: '1.0.0',
+    agents: [
+      {
+        name: 'Family_Historian',
+        role: 'Genealogy Expert',
+        goal: 'Extract and structure family relationships from memories',
+        backstory: 'Expert genealogist dengan 20+ tahun pengalaman dalam riset silsilah keluarga dan analisis dokumen historis.',
+        tools: ['memory_analyzer', 'relationship_extractor', 'date_parser'],
+        status: 'active'
+      },
+      {
+        name: 'Story_Weaver',
+        role: 'Narrative Biographer',
+        goal: 'Transform family memories into compelling stories',
+        backstory: 'Penulis biografi profesional yang ahli dalam mengubah kenangan menjadi narasi yang menyentuh hati.',
+        tools: ['text_generator', 'sentiment_analyzer', 'narrative_structurer'],
+        status: 'active'
+      },
+      {
+        name: 'Memory_Analyzer',
+        role: 'Vision & OCR Specialist',
+        goal: 'Analyze photos, documents, and extract text from images',
+        backstory: 'Computer vision expert yang dapat membaca dan menginterpretasi foto keluarga, dokumen, dan memorabilia.',
+        tools: ['image_analyzer', 'ocr_extractor', 'face_recognizer', 'metadata_reader'],
+        status: 'active'
+      }
+    ],
+    tasks: [
+      {
+        description: 'Analyze uploaded family memory (photo/document/text)',
+        expected_output: 'Structured JSON with extracted information: people, dates, locations, events',
+        agent: 'Memory_Analyzer'
+      },
+      {
+        description: 'Extract family relationships and build genealogy graph',
+        expected_output: 'Family tree graph with relationships and metadata',
+        agent: 'Family_Historian'
+      },
+      {
+        description: 'Generate narrative story from analyzed memories',
+        expected_output: 'Compelling family story in Bahasa Indonesia with emotional depth',
+        agent: 'Story_Weaver'
+      }
+    ],
+    process: 'sequential',
+    memory: true,
+    cache: true
+  })
+})
+
+// LangSmith workflow endpoint
+app.get('/api/langsmith/workflow', (c) => {
+  return c.json({
+    project: 'the-big-family-legacy',
+    name: 'family-legacy-processing',
+    description: 'End-to-end workflow untuk memproses warisan keluarga',
+    version: '1.0.0',
+    nodes: [
+      {
+        id: 'upload_memory',
+        type: 'input',
+        name: 'Memory Upload',
+        description: 'User uploads memory (photo, document, or text)'
+      },
+      {
+        id: 'analyze_memory',
+        type: 'crew_task',
+        name: 'Analyze Memory',
+        agent: 'Memory_Analyzer',
+        dependsOn: ['upload_memory']
+      },
+      {
+        id: 'extract_relationships',
+        type: 'crew_task',
+        name: 'Extract Relationships',
+        agent: 'Family_Historian',
+        dependsOn: ['analyze_memory']
+      },
+      {
+        id: 'generate_story',
+        type: 'crew_task',
+        name: 'Generate Story',
+        agent: 'Story_Weaver',
+        dependsOn: ['extract_relationships']
+      },
+      {
+        id: 'output',
+        type: 'output',
+        name: 'Final Output',
+        dependsOn: ['generate_story'],
+        description: 'Structured output with story, relationships, and metadata'
+      }
+    ],
+    edges: [
+      { from: 'upload_memory', to: 'analyze_memory' },
+      { from: 'analyze_memory', to: 'extract_relationships' },
+      { from: 'extract_relationships', to: 'generate_story' },
+      { from: 'generate_story', to: 'output' }
+    ],
+    status: 'active',
+    dashboard: 'https://smith.langchain.com/the-big-family-legacy'
+  })
+})
+
 // Memories API (stub - will be implemented with Supabase)
 app.get('/api/memories', (c) => {
   return c.json({
