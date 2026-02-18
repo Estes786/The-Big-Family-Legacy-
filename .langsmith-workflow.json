@@ -1,0 +1,90 @@
+{
+  "name": "family-legacy-processing",
+  "description": "Multi-agent workflow for processing family memories",
+  "nodes": [
+    {
+      "id": "memory_upload",
+      "type": "input",
+      "config": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "file_url": {
+              "type": "string"
+            },
+            "file_type": {
+              "type": "string",
+              "enum": [
+                "photo",
+                "video",
+                "document",
+                "audio"
+              ]
+            },
+            "uploader_id": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "analyze_memory",
+      "type": "agent",
+      "agent": "Memory Analyzer",
+      "config": {
+        "task": "Analyze uploaded memory and extract metadata"
+      }
+    },
+    {
+      "id": "extract_relationships",
+      "type": "agent",
+      "agent": "Family Historian",
+      "config": {
+        "task": "Identify family members and relationships in the memory"
+      }
+    },
+    {
+      "id": "generate_story",
+      "type": "agent",
+      "agent": "Story Weaver",
+      "config": {
+        "task": "Create narrative from memory and relationships"
+      }
+    },
+    {
+      "id": "output",
+      "type": "output",
+      "config": {
+        "format": "json",
+        "schema": {
+          "metadata": "object",
+          "relationships": "array",
+          "story": "string",
+          "timeline_events": "array"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "memory_upload",
+      "to": "analyze_memory"
+    },
+    {
+      "from": "analyze_memory",
+      "to": "extract_relationships"
+    },
+    {
+      "from": "extract_relationships",
+      "to": "generate_story"
+    },
+    {
+      "from": "generate_story",
+      "to": "output"
+    }
+  ]
+}

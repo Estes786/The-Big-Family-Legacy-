@@ -1,0 +1,64 @@
+{
+  "name": "the-big-family-legacy-crew",
+  "description": "AI crew for processing family memories and generating stories",
+  "agents": [
+    {
+      "name": "Family Historian",
+      "role": "genealogy_expert",
+      "goal": "Extract family relationships and genealogy data from memories",
+      "backstory": "Expert genealogist with decades of experience in family tree research",
+      "tools": [
+        "vision_analysis",
+        "text_extraction",
+        "date_parser"
+      ]
+    },
+    {
+      "name": "Story Weaver",
+      "role": "narrative_writer",
+      "goal": "Create compelling family stories from memories and relationships",
+      "backstory": "Creative writer specializing in family history narratives",
+      "tools": [
+        "llm_generator",
+        "memory_search",
+        "timeline_builder"
+      ]
+    },
+    {
+      "name": "Memory Analyzer",
+      "role": "vision_specialist",
+      "goal": "Analyze photos and videos to extract context and metadata",
+      "backstory": "Computer vision expert specializing in historical photo analysis",
+      "tools": [
+        "vision_model",
+        "ocr",
+        "face_recognition"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "description": "Analyze uploaded memory (photo/video/document)",
+      "agent": "Memory Analyzer",
+      "expected_output": "Structured metadata with dates, locations, people identified"
+    },
+    {
+      "description": "Extract family relationships from analyzed memory",
+      "agent": "Family Historian",
+      "expected_output": "List of family members and their relationships"
+    },
+    {
+      "description": "Generate compelling family story from memory and relationships",
+      "agent": "Story Weaver",
+      "expected_output": "Narrative text connecting memory to family history"
+    }
+  ],
+  "process": "sequential",
+  "memory": true,
+  "embedder": {
+    "provider": "openai",
+    "config": {
+      "model": "text-embedding-3-small"
+    }
+  }
+}
